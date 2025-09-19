@@ -59,18 +59,7 @@ jobs:
     needs: publish-to-ghcr
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Copy deployment script to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "scripts/deploy.sh"
-          target: "~"
-      - name: Execute deployment script on server
+      - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -78,5 +67,23 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cat << 'EOF' > ~/deploy.sh
+            #!/bin/bash
+            set -e
+            GHCR_USER=$1
+            GHCR_PAT=$2
+            IMAGE_NAME="ghcr.io/pavelnartov/learn-ai"
+            CONTAINER_NAME="learn-ai-app"
+            echo "--- Logging in to GitHub Container Registry ---"
+            echo $GHCR_PAT | docker login ghcr.io -u $GHCR_USER --password-stdin
+            echo "--- Pulling the latest image ---"
+            docker pull ${IMAGE_NAME}:latest
+            echo "--- Stopping and removing old container (if it exists) ---"
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
+            echo "--- Starting new container ---"
+            docker run -d --rm -p 3000:3000 --name $CONTAINER_NAME ${IMAGE_NAME}:latest
+            echo "--- Deployment successful! ---"
+            EOF
             chmod +x ~/deploy.sh
             ~/deploy.sh ${{ github.actor }} ${{ secrets.GHCR_PAT }}
