@@ -53,37 +53,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-  deploy-to-server:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: publish-to-ghcr
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cat << 'EOF' > ~/deploy.sh
-            #!/bin/bash
-            set -e
-            GHCR_USER=$1
-            GHCR_PAT=$2
-            IMAGE_NAME="ghcr.io/pavelnartov/learn-ai"
-            CONTAINER_NAME="learn-ai-app"
-            echo "--- Logging in to GitHub Container Registry ---"
-            echo $GHCR_PAT | sudo docker login ghcr.io -u $GHCR_USER --password-stdin
-            echo "--- Pulling the latest image ---"
-            sudo docker pull ${IMAGE_NAME}:latest
-            echo "--- Stopping and removing old container (if it exists) ---"
-            sudo docker stop $CONTAINER_NAME || true
-            sudo docker rm $CONTAINER_NAME || true
-            echo "--- Starting new container ---"
-            sudo docker run -d --rm -p 3000:3000 --name $CONTAINER_NAME ${IMAGE_NAME}:latest
-            echo "--- Deployment successful! ---"
-            EOF
-            chmod +x ~/deploy.sh
-            ~/deploy.sh ${{ github.actor }} ${{ secrets.GHCR_PAT }}
