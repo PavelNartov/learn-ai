@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  app:
+    image: ghcr.io/pavelnartov/learn-ai:latest
+    container_name: learn-ai-app
+    ports:
+      - "3000:3000"
