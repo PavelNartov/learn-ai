@@ -75,14 +75,14 @@ jobs:
             IMAGE_NAME="ghcr.io/pavelnartov/learn-ai"
             CONTAINER_NAME="learn-ai-app"
             echo "--- Logging in to GitHub Container Registry ---"
-            echo $GHCR_PAT | docker login ghcr.io -u $GHCR_USER --password-stdin
+            echo $GHCR_PAT | sudo docker login ghcr.io -u $GHCR_USER --password-stdin
             echo "--- Pulling the latest image ---"
-            docker pull ${IMAGE_NAME}:latest
+            sudo docker pull ${IMAGE_NAME}:latest
             echo "--- Stopping and removing old container (if it exists) ---"
-            docker stop $CONTAINER_NAME || true
-            docker rm $CONTAINER_NAME || true
+            sudo docker stop $CONTAINER_NAME || true
+            sudo docker rm $CONTAINER_NAME || true
             echo "--- Starting new container ---"
-            docker run -d --rm -p 3000:3000 --name $CONTAINER_NAME ${IMAGE_NAME}:latest
+            sudo docker run -d --rm -p 3000:3000 --name $CONTAINER_NAME ${IMAGE_NAME}:latest
             echo "--- Deployment successful! ---"
             EOF
             chmod +x ~/deploy.sh
