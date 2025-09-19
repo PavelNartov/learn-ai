@@ -4,7 +4,7 @@ const app = express();
 const port = 3000;
 
 app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Hello, auto-deployed world!' });
+  res.json({ message: 'System operational. Ready for the next lesson.' });
 });
 
 app.listen(port, () => {
