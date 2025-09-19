@@ -32,6 +32,7 @@ RUN npm install --omit=dev
 
 # Copy compiled code from the build stage
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/src/generated/prisma ./src/generated/prisma
 
 # Expose the port the app runs on
 EXPOSE 3000
