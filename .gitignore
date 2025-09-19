@@ -11,3 +11,7 @@ yarn-error.log*
 
 # Environment variables
 .env
+
+# Local Keys
+github-actions-key
+github-actions-key.pub
