@@ -23,7 +23,19 @@ jobs:
       - name: Run unit tests
         run: npm test
       - name: Run E2E Tests
-        run: TEST_DATABASE_URL="postgresql://testuser:testpassword@localhost:5433/testdb" npm run test:e2e
+        run: |
+          docker compose -f compose.test.yml up -d
+          echo "Waiting for test database to be ready..."
+          sleep 5
+          
+          echo "Creating .env file for tests"
+          echo "TEST_DATABASE_URL=postgresql://testuser:testpassword@localhost:5433/testdb" > .env
+
+          echo "Running Vitest E2E tests..."
+          npm test -- tests/api.test.ts
+
+          echo "Tearing down test database..."
+          docker compose -f compose.test.yml down
       - name: Build project
         run: npm run build
 
