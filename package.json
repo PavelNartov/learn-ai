@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "test:e2e": "docker compose -f compose.test.yml up -d && sleep 2 && vitest run tests/api.test.ts; docker compose -f compose.test.yml down"
   },
   "keywords": [],
   "author": "",
