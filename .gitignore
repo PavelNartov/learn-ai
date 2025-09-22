@@ -15,4 +15,6 @@ yarn-error.log*
 # Local Keys
 github-actions-key
 github-actions-key.pub
-/src/generated/prisma
+
+# Generated code
+/src/generated
