@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db-test:
+    image: postgres:15-alpine
+    container_name: postgres-db-test
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    volumes:
+      - postgres-test-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-test-data:
