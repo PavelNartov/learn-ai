@@ -20,8 +20,12 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
-      - name: Run tests
+      - name: Run unit tests
         run: npm test
+      - name: Run E2E Tests
+        env:
+          TEST_DATABASE_URL: "postgresql://testuser:testpassword@localhost:5433/testdb"
+        run: npm run test:e2e
       - name: Build project
         run: npm run build
 
